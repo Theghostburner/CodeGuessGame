@@ -1,7 +1,7 @@
 const Header = ()=>{
     return(
-        <div>
-            <h1>Guess The Code</h1>
+        <div className="Header">
+            <h1>Guess The Colour - Code</h1>
         </div>
     )
 }

@@ -4,7 +4,7 @@ const FeedBack = ({feedBackArray})=>{
             {
                 feedBackArray.map((item,index)=>{
                     return(
-                        <p>{item}</p>
+                        <button>{item}</button>
                     )
                 })
             }

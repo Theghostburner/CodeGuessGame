@@ -8,6 +8,7 @@ const GameBoard = () => {
   const [feedbacks, setFeedbacks] = useState(Array.from({ length: 10 }, () => ['x', 'x', 'x', 'x']));
   const [currentGuessIndex, setCurrentGuessIndex] = useState(0);
   const [isGameOver, setIsGameOver] = useState(false);
+  const [isGameWon, setIsGameWon] = useState(false);
 
   const onButtonClick = (index, buttonIndex) => {
     if (currentGuessIndex === index) {
@@ -25,8 +26,12 @@ const GameBoard = () => {
         newFeedbacks[index] = feedback;
         return newFeedbacks;
       });
+      if (feedback.every((color) => color === 'c')) {
+        setIsGameOver(true);
+        setIsGameWon(true);
+      }
     }
-    if (currentGuessIndex < 9) {
+    if (currentGuessIndex < 9 && !isGameWon) {
       setCurrentGuessIndex(currentGuessIndex + 1);
     } else {
       setIsGameOver(true);
@@ -34,51 +39,52 @@ const GameBoard = () => {
   };
 
   const calculateFeedback = (guess) => {
+    //1=red ,2 = yellow ,3 = blue ,4= green, 5 = orange, 6 = violet
     const secret = [1, 2, 3, 4];
     let feedback = [];
-  
+
     let guessCopy = [...guess];
     let secretCopy = [...secret];
-  
+
     // Check for exact matches
     for (let i = 0; i < guess.length; i++) {
       if (guessCopy[i] === secretCopy[i]) {
-        feedback.push('black');
+        feedback.push('c');
         guessCopy[i] = null;
         secretCopy[i] = null;
       }
     }
-  
-    // Check for number matches
+
+    // Check if it exists in wrong place and removing from guess after checking so that , repetetive elements are not considered
     for (let i = 0; i < guess.length; i++) {
       if (guessCopy[i] === null) {
         continue;
       }
-  
+
       let secretIndex = secretCopy.indexOf(guessCopy[i]);
       if (secretIndex !== -1) {
-        feedback.push('white');
+        feedback.push('u');
         guessCopy[i] = null;
         secretCopy[secretIndex] = null;
       }
     }
-  
+
     // Fill remaining feedback with x's
     while (feedback.length < 4) {
       feedback.push('x');
     }
-  
+
     return feedback;
   };
-  
-  
 
   return (
     <div>
+        {isGameWon && <p>Congratulations! You won the game.</p>}
+      {isGameOver && !isGameWon && <p>You lost the game.</p>}
       {arrayOfMoves.map((item, index) => {
-        const isGuessLineDisabled = index < currentGuessIndex;
+        const isGuessLineDisabled = index < currentGuessIndex || isGameWon;
         const isSubmitDisabled = isGuessLineDisabled || isGameOver;
-
+  
         return (
           <div key={item} className="guessLineContainer">
             <GuessLine
@@ -102,9 +108,8 @@ const GameBoard = () => {
           </div>
         );
       })}
-      {isGameOver && <p>Congratulations! You won the game.</p>}
+     
     </div>
   );
-};
-
+}  
 export default GameBoard;
